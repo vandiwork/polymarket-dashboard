@@ -92,7 +92,6 @@ def build_rows(csv_path, today):
                 "sc": parse_int(r.get("settlement_clarity")),
                 "dl": days_left(r.get("end_date"), today),
                 "url": r.get("market_url", "") or "",
-                "d": (r.get("description") or "")[:100],  # first 100 chars of description for search
             }
             rows.append(row)
     # Drop expired and same-day-expiry markets (user policy: never surface dl<=0)
