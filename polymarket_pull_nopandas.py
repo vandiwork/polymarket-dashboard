@@ -199,12 +199,31 @@ CATEGORY_RULES = [
         r"\b(extradite|pardon|clemency)\b",
         r"\b(epstein|epstein'?s island|diddy|sean combs|p.?diddy|cosby)\b",
     ]),
+    ("Finance", [
+        # M&A, acquisitions, mergers, IPOs
+        r"\b(acquire|acquisition|acquired|merger|merged|ipo|initial public offering|go public|buyout|takeover)\b",
+        r"\b(be acquired|will.*acquire|will.*merge|announced.*acquisition|announced.*merger|will.*go public)\b",
+        # Specific acquisition/merger patterns
+        r"\b(will .* (acquire|acquire|buy|merge with))\b",
+        # IPO related
+        r"\b(ipo|direct listing|spac merger|blank check company)\b",
+        # Private equity and financial transactions
+        r"\b(leveraged buyout|lbo|private equity|pe firm|buyback|share repurchase)\b",
+        # Bankruptcy and financial distress
+        r"\b(bankruptcy|insolvency|bail.?out|bank run|bank fail|fdic|bankrupt)\b",
+    ]),
     ("Economics", [
+        # Macroeconomic indicators
         r"\b(fed|federal reserve|interest rate|inflation|gdp|recession|unemployment)\b",
         r"\b(tariff|trade war|sanctions|treasury|debt ceiling|deficit)\b",
         r"\b(bank of japan|ecb|central bank|monetary policy)\b",
-        r"\b(s&p|dow jones|nasdaq|stock market|ipo)\b",
-        r"\b(oil price|commodity|housing market|cpi|ppi|jobs report|nonfarm payrolls)\b",
+        # Employment and labor
+        r"\b(jobs report|nonfarm payrolls|unemployment rate|job creation|labor force)\b",
+        # Market indices and broad financial indicators
+        r"\b(s&p 500|dow jones|nasdaq|stock market|bear market|bull market)\b",
+        r"\b(cpi|ppi|consumer prices|producer prices|wage growth)\b",
+        # Commodities and physical assets
+        r"\b(oil price|commodity|housing market|real estate|home prices)\b",
         # Commodities by name & ticker — Silver (SI), Gold (GC), Copper (HG), WTI, Brent
         r"\b(silver|gold|platinum|palladium|copper|wti|brent|natural gas)\b",
         r"\(SI\)|\(GC\)|\(HG\)|\(CL\)|\(NG\)",
@@ -213,12 +232,6 @@ CATEGORY_RULES = [
         r"\b(lng|liquified natural gas|energy prices|energy sector|energy stocks|utilities)\b",
         r"\b(renewable energy|solar|wind|hydro|nuclear power|hydroelectric)\b",
         r"\b(energy crisis|power outage|energy cost|fuel price)\b",
-        # Big banks and financial institutions — bankruptcy / fail / bailout markets
-        r"\b(ubs|credit suisse|goldman sachs|jpmorgan|jp morgan|citi|citibank|citigroup|bank of america|wells fargo|morgan stanley|deutsche bank|hsbc|barclays|bnp paribas|santander|ing group|lloyds|rbc|td bank)\b",
-        r"\b(bankruptcy|insolvency|bail.?out|bank run|bank fail|fdic)\b",
-        # "Richest person" / billionaire ranking markets
-        r"\b(richest person|richest man|richest woman|forbes billionaire|world'?s richest|net worth)\b",
-        r"\b(warren buffett|elon musk|jeff bezos|bernard arnault|mark zuckerberg|larry ellison|sergey brin|larry page|jensen huang|bill gates)\b",
     ]),
     ("Geopolitics", [
         r"\b(war|invasion|ceasefire|nato|military|troops|missile|nuclear|nuke)\b",
