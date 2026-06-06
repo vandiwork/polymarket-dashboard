@@ -533,11 +533,13 @@ function buildAnalytics() {
   });
 
   const rows = Object.values(analytics).sort((a, b) => b.vol - a.vol);
+  const fmtNum = n => (n||0).toLocaleString('en-US', {maximumFractionDigits: 0});
   const html = rows.map(r => {
-    const avgY = r.yPrices.length > 0 ? (r.yPrices.reduce((a, b) => a + b, 0) / r.yPrices.length).toFixed(3) : '—';
-    const avgN = r.nPrices.length > 0 ? (r.nPrices.reduce((a, b) => a + b, 0) / r.nPrices.length).toFixed(3) : '—';
+    const avgY = r.yPrices.length > 0 ? ((r.yPrices.reduce((a, b) => a + b, 0) / r.yPrices.length) * 100).toFixed(1) + '%' : '—';
+    const avgN = r.nPrices.length > 0 ? ((r.nPrices.reduce((a, b) => a + b, 0) / r.nPrices.length) * 100).toFixed(1) + '%' : '—';
     const wtdClarity = r.clarities.length > 0 ? (r.clarities.reduce((a, b) => a + (b.sc * b.vol), 0) / r.clarities.reduce((a, b) => a + b.vol, 0)).toFixed(2) : '—';
-    return `<tr><td><span class="cat-tag cat-${r.cat}">${r.cat}</span></td><td class="number">${r.count}</td><td class="number">$${(r.vol/1e6).toFixed(1)}M</td><td class="number">${avgY}</td><td class="number">${avgN}</td><td class="number">${wtdClarity}</td></tr>`;
+    const volDisplay = r.vol >= 1e6 ? '$' + fmtNum(r.vol/1e6) + 'M' : '$' + fmtNum(r.vol);
+    return `<tr><td><span class="cat-tag cat-${r.cat}">${r.cat}</span></td><td class="number">${fmtNum(r.count)}</td><td class="number">${volDisplay}</td><td class="number">${avgY}</td><td class="number">${avgN}</td><td class="number">${wtdClarity}</td></tr>`;
   }).join('');
   document.getElementById('analyticsTable').innerHTML = html;
 }
