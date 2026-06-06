@@ -602,11 +602,6 @@ def extract_markets_from_events(events):
 
 
 def filter_excluded(rows):
-    # Drop crypto contracts entirely — user policy: no crypto anywhere.
-    before = len(rows)
-    rows = [r for r in rows if r.get("category") != "Crypto"]
-    print(f"  Filtered out {before - len(rows)} crypto markets (excluded by policy)")
-
     # Drop markets that resolve today or earlier — user policy: no same-day expiry.
     today = datetime.now().date()
     def keeps_date(r):

@@ -92,13 +92,29 @@ a:hover{text-decoration:underline}
 .bar-chart-bar{height:14px;border-radius:3px;background:var(--accent);min-width:6px;max-width:35%;transition:.3s}
 .bar-chart-value{font-size:.78rem;color:var(--dim);font-weight:500;white-space:nowrap;margin-left:4px}
 .empty-state{text-align:center;padding:40px;color:var(--dim)}
-@media(max-width:768px){.chart-row{grid-template-columns:1fr}.controls{flex-direction:column}.controls input[type=text]{width:100%}.global-filters{flex-direction:column}}
+.header-container{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+#refreshBtn{background:var(--accent);color:#fff;border:none;border-radius:6px;padding:6px 14px;font-size:.82rem;cursor:pointer;transition:.2s;white-space:nowrap}
+#refreshBtn:hover{opacity:.85}
+#refreshBtn:disabled{opacity:.5;cursor:not-allowed}
+#refreshStatus{font-size:.75rem;color:var(--dim);margin-left:8px}
+.analytics-table{width:100%;border-collapse:collapse;font-size:.85rem}
+.analytics-table th{text-align:left;padding:10px;color:var(--dim);font-size:.75rem;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border);background:var(--card)}
+.analytics-table td{padding:10px;border-bottom:1px solid var(--border)}
+.analytics-table tbody tr:hover{background:rgba(59,130,246,.06)}
+.analytics-table .number{text-align:right}
+@media(max-width:768px){.chart-row{grid-template-columns:1fr}.controls{flex-direction:column}.controls input[type=text]{width:100%}.global-filters{flex-direction:column}.header-container{flex-direction:column;align-items:flex-start}#refreshBtn{margin-top:8px}}
 </style>
 </head>
 <body>
 
-<h1>Polymarket Active Markets Dashboard</h1>
-<p class="subtitle">Scraped 2026-05-03 22:31 UTC &middot; <span id="totalCount"></span> markets</p>
+<div class="header-container">
+  <div>
+    <h1>Polymarket Active Markets Dashboard</h1>
+    <p class="subtitle">Scraped 2026-05-03 22:31 UTC &middot; <span id="totalCount"></span> markets</p>
+  </div>
+  <button id="refreshBtn">🔄 Refresh Data</button>
+</div>
+<div id="refreshStatus"></div>
 
 <!-- GLOBAL FILTERS -->
 <div class="global-filters">
@@ -150,6 +166,7 @@ a:hover{text-decoration:underline}
 <div class="tab-bar" id="tabBar">
   <div class="tab active" data-tab="overview">Overview</div>
   <div class="tab" data-tab="all">All Markets</div>
+  <div class="tab" data-tab="analytics">Analytics</div>
 </div>
 
 <!-- OVERVIEW -->
@@ -194,6 +211,21 @@ a:hover{text-decoration:underline}
     <th data-sort="sc">SC <span class="arrow"></span></th>
     <th data-sort="dl">Expires <span class="arrow"></span></th>
   </tr></thead><tbody id="allTable"></tbody></table>
+</div>
+
+<!-- ANALYTICS -->
+<div class="tab-content" id="tab-analytics">
+  <table class="analytics-table">
+    <thead><tr>
+      <th>Category</th>
+      <th style="text-align:right">Markets</th>
+      <th style="text-align:right">Volume (USD)</th>
+      <th style="text-align:right">Avg YES Price</th>
+      <th style="text-align:right">Avg NO Price</th>
+      <th style="text-align:right">Weighted Avg Clarity</th>
+    </tr></thead>
+    <tbody id="analyticsTable"></tbody>
+  </table>
 </div>
 
 <script>
@@ -485,8 +517,88 @@ document.querySelectorAll('#allHead th').forEach(th => {
   });
 });
 
+// Analytics table builder
+function buildAnalytics() {
+  const analytics = {};
+  RAW_DATA.forEach(m => {
+    const cat = m.cat || 'Other';
+    if (!analytics[cat]) {
+      analytics[cat] = { cat, count: 0, vol: 0, yPrices: [], nPrices: [], clarities: [] };
+    }
+    analytics[cat].count++;
+    analytics[cat].vol += (m.v || 0);
+    if (m.y != null) analytics[cat].yPrices.push(m.y);
+    if (m.n != null) analytics[cat].nPrices.push(m.n);
+    if (m.sc != null) analytics[cat].clarities.push({ sc: m.sc, vol: m.v || 0 });
+  });
+
+  const rows = Object.values(analytics).sort((a, b) => b.vol - a.vol);
+  const html = rows.map(r => {
+    const avgY = r.yPrices.length > 0 ? (r.yPrices.reduce((a, b) => a + b, 0) / r.yPrices.length).toFixed(3) : '—';
+    const avgN = r.nPrices.length > 0 ? (r.nPrices.reduce((a, b) => a + b, 0) / r.nPrices.length).toFixed(3) : '—';
+    const wtdClarity = r.clarities.length > 0 ? (r.clarities.reduce((a, b) => a + (b.sc * b.vol), 0) / r.clarities.reduce((a, b) => a + b.vol, 0)).toFixed(2) : '—';
+    return `<tr><td><span class="cat-tag cat-${r.cat}">${r.cat}</span></td><td class="number">${r.count}</td><td class="number">$${(r.vol/1e6).toFixed(1)}M</td><td class="number">${avgY}</td><td class="number">${avgN}</td><td class="number">${wtdClarity}</td></tr>`;
+  }).join('');
+  document.getElementById('analyticsTable').innerHTML = html;
+}
+
+// Refresh button handler
+async function triggerRefresh() {
+  const btn = document.getElementById('refreshBtn');
+  const status = document.getElementById('refreshStatus');
+  const token = localStorage.getItem('gh_token');
+
+  if (!token) {
+    status.textContent = '❌ GitHub token not set. Open DevTools console and run: localStorage.setItem("gh_token", "YOUR_PAT")';
+    return;
+  }
+
+  btn.disabled = true;
+  status.textContent = '⏳ Triggering refresh workflow...';
+
+  try {
+    const res = await fetch('https://api.github.com/repos/vandiwork/polymarket-dashboard/actions/workflows/refresh.yml/dispatches', {
+      method: 'POST',
+      headers: {
+        'Authorization': `token ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ ref: 'main' })
+    });
+
+    if (res.ok) {
+      status.textContent = '✅ Refresh triggered! Check Actions tab for progress. Page will auto-refresh in ~2 min.';
+      setTimeout(() => {
+        status.textContent = '';
+        location.reload();
+      }, 120000);
+    } else {
+      status.textContent = `❌ API error: ${res.status} ${res.statusText}`;
+    }
+  } catch (e) {
+    status.textContent = `❌ Error: ${e.message}`;
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+document.getElementById('refreshBtn').addEventListener('click', triggerRefresh);
+
+// Tab switching
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    const tabName = tab.dataset.tab;
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById(`tab-${tabName}`).classList.add('active');
+    if (tabName === 'analytics') buildAnalytics();
+  });
+});
+
 // Initial render
 renderAll();
+buildAnalytics();
 </script>
 </body>
 </html>
