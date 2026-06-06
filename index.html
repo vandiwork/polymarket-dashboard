@@ -236,18 +236,18 @@ let RAW_DATA=[{"q":"Will Jesus Christ return before 2027?","cat":"Religion","v":
 let selectedCats = new Set();
 
 function getGlobalFiltered() {
-  const volMin = document.getElementById('gVolMin').value ? +document.getElementById('gVolMin').value : null;
-  const volMax = document.getElementById('gVolMax').value ? +document.getElementById('gVolMax').value : null;
-  const liqMin = document.getElementById('gLiqMin').value ? +document.getElementById('gLiqMin').value : null;
-  const liqMax = document.getElementById('gLiqMax').value ? +document.getElementById('gLiqMax').value : null;
+  const volMin = document.getElementById('gVolMin').value ? +document.getElementById('gVolMin').value.replace(/,/g,'') : null;
+  const volMax = document.getElementById('gVolMax').value ? +document.getElementById('gVolMax').value.replace(/,/g,'') : null;
+  const liqMin = document.getElementById('gLiqMin').value ? +document.getElementById('gLiqMin').value.replace(/,/g,'') : null;
+  const liqMax = document.getElementById('gLiqMax').value ? +document.getElementById('gLiqMax').value.replace(/,/g,'') : null;
   const moicMin = document.getElementById('gMoicMin').value ? +document.getElementById('gMoicMin').value : null;
   const moicMax = document.getElementById('gMoicMax').value ? +document.getElementById('gMoicMax').value : null;
   const expiryMin = document.getElementById('gExpiryMin').value ? +document.getElementById('gExpiryMin').value : null;
   const expiryMax = document.getElementById('gExpiryMax').value ? +document.getElementById('gExpiryMax').value : null;
   const yesMin = document.getElementById('gYesMin').value ? +document.getElementById('gYesMin').value / 100 : 0;
   const yesMax = document.getElementById('gYesMax').value ? +document.getElementById('gYesMax').value / 100 : 1;
-  const scMin = document.getElementById('gScMin').value ? +document.getElementById('gScMin').value : null;
-  const scMax = document.getElementById('gScMax').value ? +document.getElementById('gScMax').value : null;
+  const scMin = document.getElementById('gScMin').value ? +document.getElementById('gScMin').value.replace(/,/g,'') : null;
+  const scMax = document.getElementById('gScMax').value ? +document.getElementById('gScMax').value.replace(/,/g,'') : null;
   const search = document.getElementById('gSearch').value.toLowerCase().trim();
 
   return RAW_DATA.filter(m => {
@@ -440,6 +440,24 @@ function renderAllMarkets(data) {
 }
 
 // --- Wire up events ---
+
+// Format number inputs with commas
+const formatNumberInput = (el) => {
+  const val = el.value.replace(/,/g, '');
+  if (val && !isNaN(val)) {
+    el.value = parseInt(val).toLocaleString('en-US');
+  }
+};
+['gVolMin','gVolMax','gLiqMin','gLiqMax','gScMin','gScMax'].forEach(id => {
+  const el = document.getElementById(id);
+  el.addEventListener('blur', () => formatNumberInput(el));
+  el.addEventListener('input', () => {
+    const val = el.value.replace(/,/g, '');
+    if (val && /^\d+$/.test(val) && val.length > 3) {
+      el.value = parseInt(val).toLocaleString('en-US');
+    }
+  });
+});
 
 // Global range filters trigger full re-render
 ['gVolMin','gVolMax','gLiqMin','gLiqMax','gMoicMin','gMoicMax','gExpiryMin','gExpiryMax','gYesMin','gYesMax','gScMin','gScMax'].forEach(id =>
