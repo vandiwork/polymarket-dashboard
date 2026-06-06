@@ -162,6 +162,7 @@ CATEGORY_RULES = [
         r"\b(movie|film|oscar|grammy|emmy|tony|golden globe|box office)\b",
         r"\b(album|song|concert|tour|streaming|show|season \d|reality tv)\b",
         r"\b(celebrity|kardashian|taylor swift|drake|beyonce|rihanna)\b",
+        r"\b(eurovision|song contest|music festival|glastonbury|coachella)\b",
         r"\btop US Netflix\b",
     ]),
     ("Legal/Crime", [
@@ -176,6 +177,8 @@ CATEGORY_RULES = [
         r"\b(bank of japan|ecb|central bank|monetary policy)\b",
         r"\b(s&p|dow jones|nasdaq|stock market|ipo)\b",
         r"\b(oil price|commodity|housing market|cpi)\b",
+        r"\b(oil|opec|crude|petroleum|shale|fracking|lng|natural gas|energy)\b",
+        r"\b(renewable energy|solar|wind|hydro|nuclear power)\b",
     ]),
     ("Geopolitics", [
         r"\b(war|invasion|ceasefire|nato|military|troops|missile|nuclear|nuke)\b",
@@ -185,11 +188,13 @@ CATEGORY_RULES = [
     ]),
     ("Politics", [
         r"\b(election|president|prime minister|governor|senator|congress|parliament)\b",
-        r"\b(democrat|republican|gop|vote|ballot|campaign|candidate|caucus)\b",
+        r"\b(democrat|republican|gop|ballot|campaign|candidate|caucus)\b",
+        r"\b(vote for|voting for|cast.*vote|election ballot|ballot measure)\b",
         r"\b(mayor|cabinet|impeach|resign|political|party|coalition)\b",
         r"\b(trump|biden|obama|desantis|newsom|pelosi|mcconnell)\b",
         r"\b(fidesz|tisza|by-election|primary election|runoff)\b",
-        r"\b(tax|wealth tax|bill passes|legislation)\b",
+        r"\b(tax|wealth tax|legislation|executive order|filibuster|reconciliation bill)\b",
+        r"\b(bill passes|legislation passes|congress passes|senate passes)\b",
     ]),
 ]
 

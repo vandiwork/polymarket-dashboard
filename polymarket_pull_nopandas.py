@@ -155,6 +155,9 @@ CATEGORY_RULES = [
         r"\b(gta\s?vi|grand theft auto|elder scrolls|witcher|cyberpunk|minecraft|fortnite|roblox|league of legends worlds|the game awards|video game release|game release)\b",
         # Music charts and album/single releases
         r"\b(billboard hot 100|billboard 200|number one single|debut album|new album|chart.topping)\b",
+        # Music festivals and major concerts
+        r"\b(eurovision|song contest|music festival|glastonbury|coachella|bonnaroo|lollapalooza|reading festival|leeds festival|rock in rio|fuji rock)\b",
+        r"\b(grammy awards|brit awards|american music awards|mtv vma|live aid|woodstock|burning man)\b",
         r"\btop US Netflix\b",
     ]),
     ("Religion", [
@@ -205,6 +208,11 @@ CATEGORY_RULES = [
         # Commodities by name & ticker — Silver (SI), Gold (GC), Copper (HG), WTI, Brent
         r"\b(silver|gold|platinum|palladium|copper|wti|brent|natural gas)\b",
         r"\(SI\)|\(GC\)|\(HG\)|\(CL\)|\(NG\)",
+        # Energy markets — oil, gas, renewables
+        r"\b(oil|opec|crude|petroleum|shale|fracking|drilling|refinery)\b",
+        r"\b(lng|liquified natural gas|energy prices|energy sector|energy stocks|utilities)\b",
+        r"\b(renewable energy|solar|wind|hydro|nuclear power|hydroelectric)\b",
+        r"\b(energy crisis|power outage|energy cost|fuel price)\b",
         # Big banks and financial institutions — bankruptcy / fail / bailout markets
         r"\b(ubs|credit suisse|goldman sachs|jpmorgan|jp morgan|citi|citibank|citigroup|bank of america|wells fargo|morgan stanley|deutsche bank|hsbc|barclays|bnp paribas|santander|ing group|lloyds|rbc|td bank)\b",
         r"\b(bankruptcy|insolvency|bail.?out|bank run|bank fail|fdic)\b",
@@ -228,11 +236,15 @@ CATEGORY_RULES = [
     ]),
     ("Politics", [
         r"\b(election|president|prime minister|governor|senator|congress|parliament|chancellor|chancellorship)\b",
-        r"\b(democrat|republican|gop|vote|ballot|campaign|candidate|caucus|primary|midterm)\b",
+        r"\b(democrat|republican|gop|ballot|campaign|candidate|caucus|primary|midterm)\b",
+        # Vote patterns — more specific to exclude Eurovision voting
+        r"\b(vote for|voting for|cast.*vote|election ballot|ballot measure|electoral vote)\b",
         r"\b(mayor|cabinet|impeach|resign|political|party|coalition|confirmation hearing|senate confirmation)\b",
         r"\b(trump|biden|obama|desantis|newsom|pelosi|mcconnell)\b",
         r"\b(fidesz|tisza|by-election|primary election|runoff|special election|recall election)\b",
-        r"\b(tax|wealth tax|bill passes|legislation|executive order|filibuster|reconciliation bill|debt ceiling vote)\b",
+        r"\b(tax|wealth tax|legislation|executive order|filibuster|reconciliation bill)\b",
+        # Bill patterns — more specific to legislation, not commodity tariffs
+        r"\b(bill passes|legislation passes|congress passes|senate passes|will.*pass.*bill|will.*pass.*legislation)\b",
         # Nobel Peace Prize markets are typically political (e.g. Xi Jinping, Charlie Kirk)
         r"\b(nobel peace prize)\b",
         # UK politicians
