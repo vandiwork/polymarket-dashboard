@@ -556,7 +556,7 @@ function buildAnalytics() {
     const avgY = r.yPrices.length > 0 ? ((r.yPrices.reduce((a, b) => a + b, 0) / r.yPrices.length) * 100).toFixed(1) + '%' : '—';
     const avgN = r.nPrices.length > 0 ? ((r.nPrices.reduce((a, b) => a + b, 0) / r.nPrices.length) * 100).toFixed(1) + '%' : '—';
     const wtdClarity = r.clarities.length > 0 ? (r.clarities.reduce((a, b) => a + (b.sc * b.vol), 0) / r.clarities.reduce((a, b) => a + b.vol, 0)).toFixed(2) : '—';
-    const volDisplay = r.vol >= 1e6 ? '$' + fmtNum(r.vol/1e6) + 'M' : '$' + fmtNum(r.vol);
+    const volDisplay = r.vol >= 1e6 ? '$' + fmtNum(r.vol/1e6) + 'M' : '$' + fmtNum(r.vol/1e3) + 'K';
     return `<tr><td><span class="cat-tag cat-${r.cat}">${r.cat}</span></td><td class="number">${fmtNum(r.count)}</td><td class="number">${volDisplay}</td><td class="number">${avgY}</td><td class="number">${avgN}</td><td class="number">${wtdClarity}</td></tr>`;
   }).join('');
   document.getElementById('analyticsTable').innerHTML = html;
