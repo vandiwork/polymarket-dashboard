@@ -243,8 +243,11 @@ CATEGORY_RULES = [
         r"\b(leader of \w+|head of state)\b",
         r"\b(embassy|diplomat|sanctions|annex|invade|greenland)\b",
         r"\b(ISIS|al.?qaeda|taliban|terrorist)\b",
+        # Iran-specific: Persian Gulf, sanctions, nuclear deal, oil embargo
+        r"\b(persian gulf|iranian|khomeini|ayatollah|jcpoa|nuclear deal)\b",
+        r"\b(iran sanctions|oil embargo|iranian airspace)\b",
         # Geopolitical chokepoints and trade routes — ship transit / blockade markets
-        r"\b(strait of hormuz|suez canal|panama canal|south china sea|taiwan strait|bab.el.mandeb|bosphorus)\b",
+        r"\b(strait of hormuz|hormuz|suez canal|panama canal|south china sea|taiwan strait|bab.el.mandeb|bosphorus)\b",
         r"\b(ship transit|naval blockade|freedom of navigation)\b",
     ]),
     ("Politics", [
@@ -489,6 +492,25 @@ def classify_from_tags(event_tags):
     return None
 
 
+def override_category_for_geopolitics(category, question, description="", slug="", event_slug="", event_title=""):
+    """
+    Override Politics category with Geopolitics for Iran and Strait of Hormuz markets.
+    API tags can be too broad; we want these specific conflicts to be Geopolitics.
+    """
+    if category == "Politics":
+        parts = [question or "", description or "", slug or "", event_slug or "", event_title or ""]
+        text = " ".join(parts).lower()
+        # Check for Iran-related or Hormuz patterns that should be Geopolitics
+        geopolitical_patterns = [
+            r"\b(iran|hormuz|persian gulf|iranian|khomeini|ayatollah|jcpoa|nuclear deal)\b",
+            r"\b(iran sanctions|oil embargo|iranian airspace)\b",
+        ]
+        for pat in geopolitical_patterns:
+            if re.search(pat, text, re.IGNORECASE):
+                return "Geopolitics"
+    return category
+
+
 def classify_market(question, description="", slug="", event_slug="", event_title=""):
     """
     Classify a market into a category by regex-matching question + description +
@@ -604,7 +626,7 @@ def extract_markets_from_events(events):
                 "start_date": m.get("startDate", event.get("startDate")),
                 "end_date": m.get("endDate", event.get("endDate")),
                 "description": description,
-                "category": api_category or classify_market(question, description, market_slug, event_slug, event_title),
+                "category": override_category_for_geopolitics(api_category or classify_market(question, description, market_slug, event_slug, event_title), question, description, market_slug, event_slug, event_title),
                 "market_url": url,
             })
 

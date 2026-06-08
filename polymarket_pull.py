@@ -187,9 +187,17 @@ CATEGORY_RULES = [
     ]),
     ("Geopolitics", [
         r"\b(war|invasion|ceasefire|nato|military|troops|missile|nuclear|nuke)\b",
-        r"\b(hamas|hezbollah|ukraine|russia|china|iran|north korea|taiwan)\b",
+        r"\b(hamas|hezbollah|houthis|ukraine|russia|china|iran|north korea|taiwan)\b",
+        r"\b(venezuela|maduro|cuba|nicaragua)\b",
+        r"\b(syria|assad|yemen|lebanon|gaza|palestine|west bank|israel)\b",
+        r"\b(saudi arabia|qatar|uae|egypt|libya|sudan|ethiopia)\b",
+        r"\b(netanyahu|kim jong|erdogan|orban|putin)\b",
         r"\b(embassy|diplomat|sanctions|annex|invade|greenland)\b",
         r"\b(ISIS|al.?qaeda|taliban|terrorist)\b",
+        r"\b(persian gulf|iranian|khomeini|ayatollah|jcpoa|nuclear deal)\b",
+        r"\b(iran sanctions|oil embargo|iranian airspace)\b",
+        r"\b(strait of hormuz|hormuz|suez canal|panama canal|south china sea|taiwan strait|bab.el.mandeb|bosphorus)\b",
+        r"\b(ship transit|naval blockade|freedom of navigation)\b",
     ]),
     ("Politics", [
         r"\b(election|president|prime minister|governor|senator|congress|parliament)\b",
@@ -202,6 +210,23 @@ CATEGORY_RULES = [
         r"\b(bill passes|legislation passes|congress passes|senate passes)\b",
     ]),
 ]
+
+def override_category_for_geopolitics(category, question, description=""):
+    """
+    Override Politics category with Geopolitics for Iran and Strait of Hormuz markets.
+    API tags can be too broad; we want these specific conflicts to be Geopolitics.
+    """
+    if category == "Politics":
+        text = (question + " " + description).lower()
+        geopolitical_patterns = [
+            r"\b(iran|hormuz|persian gulf|iranian|khomeini|ayatollah|jcpoa|nuclear deal)\b",
+            r"\b(iran sanctions|oil embargo|iranian airspace)\b",
+        ]
+        for pat in geopolitical_patterns:
+            if re.search(pat, text, re.IGNORECASE):
+                return "Geopolitics"
+    return category
+
 
 def classify_market(question, description=""):
     """Classify a market into a category based on keywords."""
