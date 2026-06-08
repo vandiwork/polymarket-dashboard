@@ -33,6 +33,7 @@ h1{font-size:1.4rem;font-weight:700;margin-bottom:4px}
 #catCheckboxes label:hover{border-color:var(--accent)}
 #catCheckboxes input[type=checkbox]{accent-color:var(--accent)}
 table{width:100%;border-collapse:collapse;font-size:.82rem;table-layout:fixed}
+.table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
 #tab-all td,#tab-all th{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 #tab-all table colgroup col.col-market{width:auto}
 #tab-all table colgroup col.col-cat{width:120px}
@@ -102,7 +103,38 @@ a:hover{text-decoration:underline}
 .analytics-table td{padding:10px;border-bottom:1px solid var(--border)}
 .analytics-table tbody tr:hover{background:rgba(59,130,246,.06)}
 .analytics-table .number{text-align:right}
-@media(max-width:768px){.chart-row{grid-template-columns:1fr}.controls{flex-direction:column}.controls input[type=text]{width:100%}.global-filters{flex-direction:column}.header-container{flex-direction:column;align-items:flex-start}#refreshBtn{margin-top:8px}}
+@media(max-width:768px){
+  .chart-row{grid-template-columns:1fr}
+  .controls{flex-direction:column}
+  .controls input[type=text]{width:100%}
+  .header-container{flex-direction:column;align-items:flex-start}
+  #refreshBtn{margin-top:8px}
+  #tab-all table{min-width:720px}
+  .analytics-table{min-width:600px}
+  .bar-chart-label{width:40%;min-width:90px}
+  .tab-bar{overflow-x:auto}
+  .tab{white-space:nowrap}
+}
+@media(max-width:480px){
+  body{padding:10px}
+  h1{font-size:1.25rem}
+  .global-filters{padding:10px 12px;gap:8px}
+  .global-filters .sep{display:none}
+  .global-filters .filter-label{width:100%;margin:4px 0 -2px}
+  .global-filters input[type=number]{flex:1 1 70px;min-width:0;width:auto!important;padding:9px 10px;font-size:.85rem}
+  .global-filters input[type=text],.global-filters #gSearch{flex:1 1 100%;width:100%!important;padding:9px 10px;font-size:.85rem}
+  .global-filters select{padding:9px 10px;font-size:.85rem}
+  #gReset{flex:1 1 100%;padding:10px 12px!important}
+  .filter-count{margin-left:0;width:100%}
+  .controls select,.controls input{padding:10px 12px;font-size:.88rem}
+  .pill{padding:8px 14px;font-size:.82rem}
+  #catCheckboxes label{padding:6px 10px;font-size:.82rem}
+  .tab{padding:11px 16px;font-size:.9rem}
+  #refreshBtn{padding:10px 16px;font-size:.88rem}
+  .stat .value{font-size:1.35rem}
+  .bar-chart-label{font-size:.82rem}
+  .bar-chart-value{font-size:.82rem}
+}
 </style>
 </head>
 <body>
@@ -186,6 +218,7 @@ a:hover{text-decoration:underline}
   <div class="controls">
     <input type="text" id="allSearch" placeholder="Search all markets...">
   </div>
+  <div class="table-scroll">
   <table>
   <colgroup>
     <col class="col-market">
@@ -211,10 +244,12 @@ a:hover{text-decoration:underline}
     <th data-sort="sc">SC <span class="arrow"></span></th>
     <th data-sort="dl">Expires <span class="arrow"></span></th>
   </tr></thead><tbody id="allTable"></tbody></table>
+  </div>
 </div>
 
 <!-- ANALYTICS -->
 <div class="tab-content" id="tab-analytics">
+  <div class="table-scroll">
   <table class="analytics-table">
     <thead><tr>
       <th>Category</th>
@@ -226,6 +261,7 @@ a:hover{text-decoration:underline}
     </tr></thead>
     <tbody id="analyticsTable"></tbody>
   </table>
+  </div>
 </div>
 
 <script>
